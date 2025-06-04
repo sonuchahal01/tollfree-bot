@@ -1,3 +1,4 @@
+require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const admin = require('firebase-admin');
 const serviceAccount = require('./serviceAccountKey.json');
@@ -7,44 +8,26 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
-
-// ✅ Your Bot Token
-const token = '8124994370:AAHPlPrJsVm0GnCatdXfQe3tRKwNAqjCqU0';
-
-const bot = new TelegramBot(token, { polling: true });
-
-bot.onText(/\/start/, (msg) => {
-  const welcomeMessage = `👋 Welcome to Toll-Free Helper Bot!
-
-🔍 Type any company/brand name like:
-• flipkart
-• sbi
-• airtel
-
-And I’ll send you their toll-free number.`;
-  bot.sendMessage(msg.chat.id, welcomeMessage);
-});
+const bot = new TelegramBot(process.env.BOT_TOKEN, { polling: true });
 
 bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
-  const text = msg.text?.toLowerCase()?.trim();
-
-  if (text.startsWith('/')) return;
+  const query = msg.text.toLowerCase().trim();
 
   try {
-    const snapshot = await db.collection('tollfree').where('brand', '==', text).get();
-
+    const snapshot = await db.collection('tollfree').where('name', '==', query).get();
     if (snapshot.empty) {
-      await bot.sendMessage(chatId, `❌ Sorry, no toll-free info found for "${text}". Try another brand.`);
-    } else {
-      snapshot.forEach(async (doc) => {
-        const data = doc.data();
-        const reply = `📞 Toll-Free: ${data.number || 'N/A'}\n📧 Email: ${data.email || 'N/A'}\n🏷️ Category: ${data.category || 'N/A'}`;
-        await bot.sendMessage(chatId, reply);
-      });
+      bot.sendMessage(chatId, `❌ Sorry, no toll-free info found for "${query}". Try another brand.`);
+      return;
     }
-  } catch (err) {
-    console.error(err);
-    await bot.sendMessage(chatId, '⚠️ Something went wrong. Please try again later.');
+
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const message = `📞 Toll-Free: ${data.number}\n📧 Email: ${data.email}\n🏷️ Category: ${data.category}`;
+      bot.sendMessage(chatId, message);
+    });
+  } catch (error) {
+    console.error('❗ Error:', error);
+    bot.sendMessage(chatId, '⚠️ Internal error. Please try again later.');
   }
 });
