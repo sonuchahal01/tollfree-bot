@@ -1,13 +1,12 @@
-
 {
-  "name": "tollfree-bot",
+  "name": "tollfree-helper-bot",
   "version": "1.0.0",
-  "description": "Telegram Bot to fetch toll-free numbers from Firestore",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
+    "express": "^4.18.2",
     "firebase-admin": "^11.5.0",
     "node-telegram-bot-api": "^0.61.0"
   }
