@@ -10,15 +10,16 @@ const db = admin.firestore();
 const token = '💬 YAHAN_APNA_BOT_TOKEN_DALO';
 const bot = new TelegramBot(token, { polling: true });
 
-bot.onText(/\/start/, (msg) => {
-  bot.sendMessage(msg.chat.id, `👋 Welcome to Toll-Free Bot!
-\n\nType any brand name like:
+const welcomeText = `🖐️ Welcome to Toll-Free Bot!
+
+Type any brand name like:
 🛒 flipkart
 📱 airtel
 🏦 sbi
 
-And I'll fetch the toll-free number.`);
-});
+And I'll fetch the toll-free number.`;
+
+bot.sendMessage(msg.chat.id, welcomeText);
 
 bot.on('message', async (msg) => {
   const chatId = msg.chat.id;
