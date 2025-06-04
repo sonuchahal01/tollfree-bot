@@ -9,7 +9,7 @@ admin.initializeApp({
 const db = admin.firestore();
 
 // ✅ Your Bot Token
-const token = '8124994370:AAFy-obY-8jXdMNc5_cwnelQj3Bku-O2JdQ';
+const token = '8124994370:AAHPlPrJsVm0GnCatdXfQe3tRKwNAqjCqU0';
 
 const bot = new TelegramBot(token, { polling: true });
 
